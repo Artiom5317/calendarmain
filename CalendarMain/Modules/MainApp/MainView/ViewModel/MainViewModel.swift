@@ -151,9 +151,16 @@ protocol MainViewModelProtocol: AnyObject {
     // MARK: - Actions
 
     func taskIsComplete(at index: Int)
+    func exitButtonTapped()
 }
 
 final class MainViewModel: MainViewModelProtocol {
+    
+    var onRouteToExit: (() -> Void)?
+    func exitButtonTapped() {
+        self.onRouteToExit?()
+    }
+    
 
     // MARK: - Dependencies
 

@@ -133,7 +133,7 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-// MARK: - Navigation & Bindings
+// MARK: - NavigationBar & Bindings
 
 private extension MainViewController {
 
@@ -145,8 +145,18 @@ private extension MainViewController {
 
         navigationController?.navigationBar.layer.borderWidth = 1
         navigationController?.navigationBar.layer.borderColor = Resources.Colors.separator.cgColor
+        
+//        navigationItem.rightBarButtonItem = UIBar
+        let exitButton = PrimaryButton(title: "exit")
+        exitButton.contentEdgeInsets = .init(top: 8, left: 8, bottom: 8, right: 8)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: exitButton)
+        exitButton.addTarget(self, action: #selector(tappedExit), for: .touchUpInside)
     }
 
+    @objc func tappedExit() {
+        self.mainViewModel.exitButtonTapped()
+    }
+    
     func setupViewModelBindings() {
         mainViewModel.onDataUpdated = { [weak self] in
             guard let self = self else { return }

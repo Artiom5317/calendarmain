@@ -16,22 +16,42 @@ protocol Coordinator: AnyObject {
 }
 
 
+
 final class AppCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
+    let window: UIWindow
     
+    init(window: UIWindow) {
+        self.window = window
+    }
 
     func start() {
-        let auth: Bool = true
-        
-        if auth {
-            showMainTabBar()
-        }
-        else {
-            print("fucked up")
+        // Всегда попадаем сюда (временно)
+        showAuthView()
+    }
+    
+    func showMainTabBar() {
+        let tabBar = TabBarController()
+        let tabBarCoordinator = TabBarCoordinator(tabBar: tabBar)
+        childCoordinators.append(tabBarCoordinator)
+        tabBarCoordinator.start()
+        window.rootViewController = tabBar
+        UIView.transition(with: self.window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
+        tabBarCoordinator.logOutCompletion = { [weak self] in
+            self?.showAuthView()
         }
     }
     
     
-    func showMainTabBar() {
+    func showAuthView() {
+//        childCoordinators.removeAll()
+        let authFlow = AuthCoordinator(window: window)
+        
+        authFlow.onFinish = { [weak self, weak authFlow] in
+            self?.childCoordinators.removeAll{ $0 === authFlow }
+            self?.showMainTabBar()
+        }
+        childCoordinators.append(authFlow)
+        authFlow.start()
     }
 }
